@@ -16,7 +16,7 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 public slots:
-    void runDoom();
+    void runDoom() const;
     void changeNick(const QString &text);
     void selectedMainWad(const QString &text);
 

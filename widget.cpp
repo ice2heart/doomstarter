@@ -25,7 +25,7 @@ Widget::Widget(QWidget *parent) :
     mMainWad = selectedWad;
     QDir wadDir(mWadDirPath);
     QStringList wads(wadDir.entryList(QStringList("*.wad")));
-    for (auto wad: wads){
+    for (const auto &wad: wads){
         QRadioButton *rb = new QRadioButton(wad, this);
         if (wad == selectedWad) {
             rb->setChecked(true);
@@ -43,7 +43,7 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::runDoom()
+void Widget::runDoom() const
 {
     QStringList args;
     QDir wadsDir(mWadDirPath);

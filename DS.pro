@@ -20,3 +20,5 @@ SOURCES += main.cpp\
 HEADERS  += widget.h
 
 FORMS    += widget.ui
+
+win32:RC_ICONS += res/doom-mp.ico

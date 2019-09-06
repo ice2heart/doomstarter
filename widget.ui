@@ -43,6 +43,14 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>PK3</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3"/>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="pushButtonRun">
      <property name="text">
       <string>Run</string>

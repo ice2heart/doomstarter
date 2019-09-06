@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QStringList>
 #include <QRadioButton>
+#include <QCheckBox>
 
 
 Widget::Widget(QWidget *parent) :
@@ -22,6 +23,7 @@ Widget::Widget(QWidget *parent) :
 
     mWadDirPath = mSettings.value("wadDir", QString("wads")).toString();
     QString selectedWad = mSettings.value("mainWad", QString("doom.wad")).toString();
+    mPk3s = mSettings.value("pk3s", QStringList()).toStringList();
     mMainWad = selectedWad;
     QDir wadDir(mWadDirPath);
     QStringList wads(wadDir.entryList(QStringList("*.wad")));
@@ -33,6 +35,17 @@ Widget::Widget(QWidget *parent) :
         connect(rb, &QRadioButton::clicked, [wad, this](){this->selectedMainWad(wad);});
         ui->verticalLayout_2->addWidget(rb);
     }
+    QStringList pk3s(wadDir.entryList(QStringList("*.pk3")));
+    for (const auto &pk3: pk3s) {
+        QCheckBox *cb = new QCheckBox(pk3, this);
+        if (mPk3s.contains(pk3, Qt::CaseInsensitive)) {
+            cb->setChecked(true);
+        }
+        connect(cb, &QCheckBox::toggled, [pk3, this](bool checked){this->pk3State(checked, pk3);});
+
+        ui->verticalLayout_3->addWidget(cb);
+    }
+
 
     connect(ui->pushButtonRun, SIGNAL(clicked()), this, SLOT(runDoom()));
     connect(ui->lineEditNick, SIGNAL(textChanged(QString)), this, SLOT(changeNick(QString)));
@@ -51,19 +64,19 @@ void Widget::runDoom() const
     args.append("-iwad");
     args.append(wadsDir.filePath(mMainWad));
     //wads
-    args.append("-file");
-    QString wads = mSettings.value("wads", QString("bd21test-jan02.pk3 skulltag_actors.pk3")).toString();
-    QStringList wadsList = wads.split(" ");
+
+    QStringList wadsList = this->mPk3s;
     for (auto &wad: wadsList){
-        wad = wadsDir.filePath(wad);
+        args.append("-file");
+        args.append(wadsDir.filePath(wad));
     }
-    args.append(wadsList);
     //connect
     args.append("+connect");
     args.append(mSettings.value("server", QString("ice2heart.com")).toString());
     //nick
     args.append("+Name");
     args.append(ui->lineEditNick->text());
+    qDebug()<<args;
     QString doomApp = mSettings.value("doomBin", QString("zandronum.exe")).toString();
 
     QProcess::startDetached(QDir(qApp->applicationDirPath()).filePath(doomApp), args);
@@ -79,4 +92,16 @@ void Widget::selectedMainWad(const QString &text)
 {
     mSettings.setValue("mainWad", text);
     mMainWad = text;
+}
+
+void Widget::pk3State(int isChecked, const QString &pk3)
+{
+    if (isChecked){
+        this->mPk3s.append(pk3);
+
+    } else {
+        this->mPk3s.removeAll(pk3);
+
+    }
+    mSettings.setValue("pk3s", this->mPk3s);
 }

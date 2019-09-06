@@ -19,12 +19,14 @@ public slots:
     void runDoom() const;
     void changeNick(const QString &text);
     void selectedMainWad(const QString &text);
+    void pk3State(int isChecked, const QString &pk3);
 
 private:
     Ui::Widget *ui;
     QSettings mSettings;
     QString mMainWad;
     QString mWadDirPath;
+    QStringList mPk3s;
 };
 
 #endif // WIDGET_H
